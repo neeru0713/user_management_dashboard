@@ -8,7 +8,6 @@ const TableRow = ({
   editButtonClickHandler,
   deleteRow,
   editingRow,
-  updateRowItem,
   saveUpdatedData,
 }) => {
   const [editingData, setEditingData] = useState({

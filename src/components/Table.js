@@ -2,27 +2,31 @@ import React, { useState, useEffect } from "react";
 import TableRow from "./TableRow"; // Assuming TableRow component is in a separate file
 import Button from "./Button";
 import Modal  from "./Modal";
+import Notification from "./Notification";
 const Table = () => {
   const [users, setUsers] = useState([]);
   const [isShowModal, setIsShowModal] = useState(false);
   const [editingRow, setEditingRow] = useState(-1);
+  const [notification, setNotification] = useState({ message: "", type: "" });
+
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: "", type: "" }), 3000);
+  };
 
   async function onSubmit(body) {
     try {
       const res = await fetch("https://jsonplaceholder.typicode.com/users", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body), 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
-  
-      const result = await res.json(); 
-      console.log("User added successfully:", result);
+      const result = await res.json();
       setUsers([...users, result]);
       setIsShowModal(false);
+      showNotification("User added successfully!", "success");
     } catch (e) {
-      console.error("Error adding user:", e);
+      showNotification("Error adding user.", "error");
     }
   }
 
@@ -31,8 +35,9 @@ const Table = () => {
       const res = await fetch("https://jsonplaceholder.typicode.com/users");
       const users = await res.json();
       setUsers(users);
+      showNotification("Users loaded successfully!", "success");
     } catch (e) {
-      console.log(e);
+      showNotification("Error fetching users.", "error");
     }
   }
 
@@ -70,55 +75,39 @@ const Table = () => {
         bs: "default-bs",
       },
     };
-  
+
     try {
       const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
       });
-  
       const result = await response.json();
-      console.log("Data updated successfully:", result);
-
-      const tempArr = [...users];
-      tempArr[index] = result;
-      setUsers(tempArr);
-      
+      const updatedUsers = [...users];
+      updatedUsers[index] = result;
+      setUsers(updatedUsers);
+      setEditingRow(-1);
+      showNotification("User updated successfully!", "success");
     } catch (error) {
-      console.error("Error updating data:", error);
+      showNotification("Error updating user.", "error");
     }
-  
-    setEditingRow(-1);
-  }
-  
-
-  function updateRowItem(event) {
-    let index = parseInt(event.target.getAttribute("data-index"));
-    let keyName = event.target.name;
-    let val = event.target.value;
-    let newArray = [...users];
-    newArray[index][keyName] = val;
-    setUsers(newArray);
   }
 
   async function deleteRow(event, index) {
-    event.preventDefault(); 
+    event.preventDefault();
     const id = index + 1;
     try {
       const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
         method: "DELETE",
-      });  
+      });
       if (response.ok) {
-        console.log(`User with ID ${id} deleted successfully.`);
         setUsers((prevUsers) => prevUsers.filter((_, i) => i !== index));
+        showNotification("User deleted successfully!", "success");
       } else {
-        console.error("Failed to delete the user.");
+        showNotification("Failed to delete user.", "error");
       }
     } catch (error) {
-      console.error("Error deleting data:", error);
+      showNotification("Error deleting user.", "error");
     }
   }
   
@@ -126,13 +115,17 @@ const Table = () => {
     setIsShowModal(false)
   }
 
-
   function addNewUser() {
    setIsShowModal(true)
   }
 
   return (
     <div className="flex flex-col mt-5">
+      <Notification
+        message={notification.message}
+        type={notification.type}
+        onClose={() => setNotification({ message: "", type: "" })}
+      />
       <h1 className="text-center text-4xl font-bold">
         {" "}
         <span className="text-teal-600">U</span>ser{" "}
@@ -165,7 +158,6 @@ const Table = () => {
                 index={index}
                 editButtonClickHandler={editButtonClickHandler}
                 deleteRow={deleteRow}
-                updateRowItem={updateRowItem}
                 saveUpdatedData={saveUpdatedData}
               />
             ))}
