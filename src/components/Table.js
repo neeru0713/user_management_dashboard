@@ -44,29 +44,56 @@ const Table = () => {
     setEditingRow(index);
   }
 
-  function saveUpdatedData(event, index, editingData) {
-    let myarr = [...users];
+  async function saveUpdatedData(event, index, editingData) {
+    event.preventDefault();
+    const id = index + 1;
+    const updatedData = {
+      id: id,
+      name: `${editingData.firstName}${editingData.lastName}`,
+      username: editingData.firstName.toLowerCase(), 
+      email: editingData.email,
+      address: {
+        street: "Default Street", 
+        suite: "Default Suite",
+        city: "Default City",
+        zipcode: "00000",
+        geo: {
+          lat: "0.0000",
+          lng: "0.0000",
+        },
+      },
+      phone: "000-000-0000", 
+      website: "example.com",
+      company: {
+        name: editingData.department,
+        catchPhrase: "Default CatchPhrase",
+        bs: "default-bs",
+      },
+    };
+  
+    try {
+      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+  
+      const result = await response.json();
+      console.log("Data updated successfully:", result);
 
-    myarr[index].firstName =
-      editingData.firstName === ""
-        ? myarr[index].firstName
-        : editingData.firstName;
-    myarr[index].lastName =
-      editingData.lastName === ""
-        ? myarr[index].lastName
-        : editingData.lastName;
-
-    myarr[index].email =
-      editingData.email === "" ? myarr[index].email : editingData.email;
-    myarr[index].department =
-      editingData.department === ""
-        ? myarr[index].department
-        : editingData.department;
-
-    setUsers(myarr);
-
+      const tempArr = [...users];
+      tempArr[index] = result;
+      setUsers(tempArr);
+      
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  
     setEditingRow(-1);
   }
+  
 
   function updateRowItem(event) {
     let index = parseInt(event.target.getAttribute("data-index"));
