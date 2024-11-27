@@ -1,10 +1,30 @@
 import React, { useState, useEffect } from "react";
 import TableRow from "./TableRow"; // Assuming TableRow component is in a separate file
 import Button from "./Button";
-
+import Modal  from "./Modal";
 const Table = () => {
   const [users, setUsers] = useState([]);
+  const [isShowModal, setIsShowModal] = useState(false);
   const [editingRow, setEditingRow] = useState(-1);
+
+  async function onSubmit(body) {
+    try {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body), 
+      });
+  
+      const result = await res.json(); 
+      console.log("User added successfully:", result);
+      setUsers([...users, result]);
+      setIsShowModal(false);
+    } catch (e) {
+      console.error("Error adding user:", e);
+    }
+  }
 
   async function fetchUsers() {
     try {
@@ -67,61 +87,13 @@ const Table = () => {
     setUsers(filteredArray);
   }
 
-  function getRandomIndex(arr) {
-    return Math.floor(Math.random() * arr.length);
+  function onClose() {
+    setIsShowModal(false)
   }
 
-  function generateRandomUser() {
-    const firstNames = [
-      "John",
-      "Alice",
-      "Eva",
-      "Michael",
-      "Olivia",
-      "Daniel",
-      "Sophia",
-      "Liam",
-      "Ava",
-      "Logan",
-    ];
-    const lastNames = [
-      "Doe",
-      "Smith",
-      "Johnson",
-      "Brown",
-      "Williams",
-      "Miller",
-      "Jones",
-      "Martinez",
-      "Davis",
-    ];
-    const departments = [
-      "IT",
-      "Marketing",
-      "Sales",
-      "Finance",
-      "Human Resources",
-    ];
-
-    const randomUser = {
-      id: users.length + 1,
-      firstName: firstNames[getRandomIndex(firstNames)],
-      lastName: lastNames[getRandomIndex(lastNames)],
-      email: "",
-      department: departments[getRandomIndex(departments)],
-    };
-
-    // Generate email using firstName and lastName
-    randomUser.email = `${randomUser.firstName.toLowerCase()}.${randomUser.lastName.toLowerCase()}@example.com`;
-
-    return randomUser;
-  }
 
   function addNewUser() {
-    let user = generateRandomUser();
-    let myarr = [...users];
-    myarr.push(user);
-    setUsers(myarr);
+   setIsShowModal(true)
   }
 
   return (
@@ -165,7 +137,9 @@ const Table = () => {
           </tbody>
         </table>
       </div>
+      <Modal isShowModal={isShowModal} onSubmit={onSubmit} onClose={onClose}/>
     </div>
+   
   );
 };
 

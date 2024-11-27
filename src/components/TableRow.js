@@ -17,11 +17,7 @@ const TableRow = ({
     department: "",
     email: "",
   });
-
-  useEffect(() => {
-    console.log(editingData);
-  }, [editingData]);
-
+  
   function handleEditingUpdate(event) {
     let keyname = event.target.name;
     let myarr = { ...editingData };
@@ -43,7 +39,7 @@ const TableRow = ({
             placeholder="Modify Text"
           />
         ) : (
-          user.name.split(" ")[0]
+          user?.name?.split(" ")[0]
         )}
       </td>
       <td className="w-[20%]">
@@ -57,7 +53,7 @@ const TableRow = ({
             placeholder="Modify Text"
           />
         ) : (
-          user.name.split(" ")[1]
+          user?.name?.split(" ")[1]
         )}
       </td>
       <td className="w-[20%]">
