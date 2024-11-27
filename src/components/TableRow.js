@@ -43,7 +43,7 @@ const TableRow = ({
             placeholder="Modify Text"
           />
         ) : (
-          user.firstName
+          user.name.split(" ")[0]
         )}
       </td>
       <td className="w-[20%]">
@@ -57,7 +57,7 @@ const TableRow = ({
             placeholder="Modify Text"
           />
         ) : (
-          user.lastName
+          user.name.split(" ")[1]
         )}
       </td>
       <td className="w-[20%]">
@@ -86,7 +86,7 @@ const TableRow = ({
             placeholder="Modify Text"
           />
         ) : (
-          user.department
+          user.company.name
         )}
       </td>
       <td className=" w-[15%] icon-group flex text-center pl-20">

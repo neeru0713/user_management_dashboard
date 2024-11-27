@@ -3,197 +3,126 @@ import TableRow from "./TableRow"; // Assuming TableRow component is in a separa
 import Button from "./Button";
 
 const Table = () => {
-    const [users, setUsers] = useState([]);
-    const [editingRow, setEditingRow] = useState(-1)
+  const [users, setUsers] = useState([]);
+  const [editingRow, setEditingRow] = useState(-1);
+
+  async function fetchUsers() {
+    try {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users");
+      const users = await res.json();
+      setUsers(users);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   useEffect(() => {
-    const users = [
-  {
-    id: 1,
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    department: "IT",
-  },
-  {
-    id: 2,
-    firstName: "Alice",
-    lastName: "Smith",
-    email: "alice.smith@example.com",
-    department: "Marketing",
-  },
-  {
-    id: 3,
-    firstName: "Eva",
-    lastName: "Johnson",
-    email: "eva.johnson@example.com",
-    department: "Sales",
-  },
-  {
-    id: 4,
-    firstName: "Michael",
-    lastName: "Brown",
-    email: "michael.brown@example.com",
-    department: "Finance",
-  },
-  {
-    id: 5,
-    firstName: "Olivia",
-    lastName: "Williams",
-    email: "olivia.williams@example.com",
-    department: "Human Resources",
-  },
-  {
-    id: 6,
-    firstName: "Daniel",
-    lastName: "Miller",
-    email: "daniel.miller@example.com",
-    department: "IT",
-  },
-  {
-    id: 7,
-    firstName: "Sophia",
-    lastName: "Jones",
-    email: "sophia.jones@example.com",
-    department: "Marketing",
-  },
-  {
-    id: 8,
-    firstName: "Liam",
-    lastName: "Johnson",
-    email: "liam.johnson@example.com",
-    department: "Sales",
-  },
-  {
-    id: 9,
-    firstName: "Ava",
-    lastName: "Martinez",
-    email: "ava.martinez@example.com",
-    department: "Finance",
-  },
-  {
-    id: 10,
-    firstName: "Logan",
-    lastName: "Davis",
-    email: "logan.davis@example.com",
-    department: "Human Resources",
-  }
-];
-
-// You now have 10 unique user objects in the 'users' array.
-
-
-    setUsers(users);
+    fetchUsers();
   }, []);
 
   function editButtonClickHandler(event, index) {
     setEditingRow(index);
-    }
+  }
 
-    function saveUpdatedData(event, index, editingData) {
-        let myarr = [...users]
-        
-        myarr[index].firstName =
-          editingData.firstName === ""
-            ? myarr[index].firstName
-            : editingData.firstName;
-        myarr[index].lastName =
-          editingData.lastName === ""
-            ? myarr[index].lastName
-                : editingData.lastName;
-        
-        myarr[index].email =
-          editingData.email === ""
-            ? myarr[index].email
-            : editingData.email;
-        myarr[index].department =
-          editingData.department === ""
-            ? myarr[index].department
-                : editingData.department;
-        
-        setUsers(myarr)
+  function saveUpdatedData(event, index, editingData) {
+    let myarr = [...users];
 
-        setEditingRow(-1)
-        
-    }
-    
+    myarr[index].firstName =
+      editingData.firstName === ""
+        ? myarr[index].firstName
+        : editingData.firstName;
+    myarr[index].lastName =
+      editingData.lastName === ""
+        ? myarr[index].lastName
+        : editingData.lastName;
 
-    function updateRowItem(event) {
-        let index = parseInt(event.target.getAttribute("data-index"));
-        let keyName = event.target.name
-        let val = event.target.value
-        let newArray = [...users]
-        newArray[index][keyName] = val
-        setUsers(newArray);
-    }
+    myarr[index].email =
+      editingData.email === "" ? myarr[index].email : editingData.email;
+    myarr[index].department =
+      editingData.department === ""
+        ? myarr[index].department
+        : editingData.department;
 
-    function deleteRow(event, index) {
+    setUsers(myarr);
+
+    setEditingRow(-1);
+  }
+
+  function updateRowItem(event) {
+    let index = parseInt(event.target.getAttribute("data-index"));
+    let keyName = event.target.name;
+    let val = event.target.value;
+    let newArray = [...users];
+    newArray[index][keyName] = val;
+    setUsers(newArray);
+  }
+
+  function deleteRow(event, index) {
     let filteredArray = users.filter((rowData, ind) => {
       return ind !== index;
     });
-        
+
     console.log("filtered : ", filteredArray);
-      
+
     setUsers(filteredArray);
   }
 
+  function getRandomIndex(arr) {
+    return Math.floor(Math.random() * arr.length);
+  }
 
-function getRandomIndex(arr) {
-  return Math.floor(Math.random() * arr.length);
-}
+  function generateRandomUser() {
+    const firstNames = [
+      "John",
+      "Alice",
+      "Eva",
+      "Michael",
+      "Olivia",
+      "Daniel",
+      "Sophia",
+      "Liam",
+      "Ava",
+      "Logan",
+    ];
+    const lastNames = [
+      "Doe",
+      "Smith",
+      "Johnson",
+      "Brown",
+      "Williams",
+      "Miller",
+      "Jones",
+      "Martinez",
+      "Davis",
+    ];
+    const departments = [
+      "IT",
+      "Marketing",
+      "Sales",
+      "Finance",
+      "Human Resources",
+    ];
 
-function generateRandomUser() {
-  const firstNames = [
-    "John",
-    "Alice",
-    "Eva",
-    "Michael",
-    "Olivia",
-    "Daniel",
-    "Sophia",
-    "Liam",
-    "Ava",
-    "Logan",
-  ];
-  const lastNames = [
-    "Doe",
-    "Smith",
-    "Johnson",
-    "Brown",
-    "Williams",
-    "Miller",
-    "Jones",
-    "Martinez",
-    "Davis",
-  ];
-  const departments = [
-    "IT",
-    "Marketing",
-    "Sales",
-    "Finance",
-    "Human Resources",
-  ];
+    const randomUser = {
+      id: users.length + 1,
+      firstName: firstNames[getRandomIndex(firstNames)],
+      lastName: lastNames[getRandomIndex(lastNames)],
+      email: "",
+      department: departments[getRandomIndex(departments)],
+    };
 
-  const randomUser = {
-    id: users.length + 1,
-    firstName: firstNames[getRandomIndex(firstNames)],
-    lastName: lastNames[getRandomIndex(lastNames)],
-    email: "",
-    department: departments[getRandomIndex(departments)],
-  };
+    // Generate email using firstName and lastName
+    randomUser.email = `${randomUser.firstName.toLowerCase()}.${randomUser.lastName.toLowerCase()}@example.com`;
 
-  // Generate email using firstName and lastName
-  randomUser.email = `${randomUser.firstName.toLowerCase()}.${randomUser.lastName.toLowerCase()}@example.com`;
+    return randomUser;
+  }
 
-  return randomUser;
-}
-
-    function addNewUser() {
-      let user = generateRandomUser()
-      let myarr = [...users]
-      myarr.push(user)
-      setUsers(myarr)
-    }
+  function addNewUser() {
+    let user = generateRandomUser();
+    let myarr = [...users];
+    myarr.push(user);
+    setUsers(myarr);
+  }
 
   return (
     <div className="flex flex-col mt-5">
