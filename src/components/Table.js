@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import TableRow from "./TableRow"; // Assuming TableRow component is in a separate file
+import TableRow from "./TableRow"; 
 import Button from "./Button";
-import Modal  from "./Modal";
+import Modal from "./Modal";
 import Notification from "./Notification";
+
 const Table = () => {
   const [users, setUsers] = useState([]);
   const [isShowModal, setIsShowModal] = useState(false);
   const [editingRow, setEditingRow] = useState(-1);
   const [notification, setNotification] = useState({ message: "", type: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(5); 
 
   const showNotification = (message, type) => {
     setNotification({ message, type });
@@ -45,6 +48,25 @@ const Table = () => {
     fetchUsers();
   }, []);
 
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  // Pagination controls
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   function editButtonClickHandler(event, index) {
     setEditingRow(index);
   }
@@ -55,10 +77,10 @@ const Table = () => {
     const updatedData = {
       id: id,
       name: `${editingData.firstName}${editingData.lastName}`,
-      username: editingData.firstName.toLowerCase(), 
+      username: editingData.firstName.toLowerCase(),
       email: editingData.email,
       address: {
-        street: "Default Street", 
+        street: "Default Street",
         suite: "Default Suite",
         city: "Default City",
         zipcode: "00000",
@@ -67,7 +89,7 @@ const Table = () => {
           lng: "0.0000",
         },
       },
-      phone: "000-000-0000", 
+      phone: "000-000-0000",
       website: "example.com",
       company: {
         name: editingData.department,
@@ -110,13 +132,13 @@ const Table = () => {
       showNotification("Error deleting user.", "error");
     }
   }
-  
+
   function onClose() {
-    setIsShowModal(false)
+    setIsShowModal(false);
   }
 
   function addNewUser() {
-   setIsShowModal(true)
+    setIsShowModal(true);
   }
 
   return (
@@ -151,7 +173,7 @@ const Table = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {currentUsers.map((user, index) => (
               <TableRow
                 editingRow={editingRow}
                 user={user}
@@ -164,9 +186,30 @@ const Table = () => {
           </tbody>
         </table>
       </div>
-      <Modal isShowModal={isShowModal} onSubmit={onSubmit} onClose={onClose}/>
+
+
+      <div className="flex justify-between items-center m-auto pt-8 w-[50%]">
+        <button
+          onClick={prevPage}
+          disabled={currentPage === 1}
+          className="bg-teal-700 text-white p-2 rounded disabled:bg-gray-300"
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={nextPage}
+          disabled={currentPage === totalPages}
+          className="bg-teal-700 text-white p-2 rounded disabled:bg-gray-300"
+        >
+          Next
+        </button>
+      </div>
+
+      <Modal isShowModal={isShowModal} onSubmit={onSubmit} onClose={onClose} />
     </div>
-   
   );
 };
 
