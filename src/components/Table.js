@@ -104,16 +104,24 @@ const Table = () => {
     setUsers(newArray);
   }
 
-  function deleteRow(event, index) {
-    let filteredArray = users.filter((rowData, ind) => {
-      return ind !== index;
-    });
-
-    console.log("filtered : ", filteredArray);
-
-    setUsers(filteredArray);
+  async function deleteRow(event, index) {
+    event.preventDefault(); 
+    const id = index + 1;
+    try {
+      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+        method: "DELETE",
+      });  
+      if (response.ok) {
+        console.log(`User with ID ${id} deleted successfully.`);
+        setUsers((prevUsers) => prevUsers.filter((_, i) => i !== index));
+      } else {
+        console.error("Failed to delete the user.");
+      }
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
   }
-
+  
   function onClose() {
     setIsShowModal(false)
   }
