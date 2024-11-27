@@ -1,0 +1,31 @@
+th{
+  @apply text-center;
+}
+
+th{
+  font-size: large;
+}
+
+td{
+  @apply text-center;
+}
+
+td{
+  font-size: medium;
+}
+
+.deleteIconRed{
+  fill :red;
+ height: 20px;
+ width: 20px; 
+}
+
+#editBtn{
+  fill: white(135, 238, 247);
+  height: 20px;
+ width: 20px; 
+}
+
+th{
+  @apply text-teal-700
+}
